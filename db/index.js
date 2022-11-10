@@ -326,5 +326,6 @@ async function createUser({
     getAllTags,
     createPostTag,
     addTagsToPost,
-    getUserByUsername
+    getUserByUsername,
+    getPostById
   };
