@@ -178,6 +178,13 @@ async function createUser({
         FROM posts
         WHERE id=$1;
       `, [postId]);
+
+      if (!post) {
+        throw {
+          name: "Post Not Found Error",
+          message: "Could not find post with that post id"
+        };
+      }
   
       const { rows: tags } = await client.query(`
         SELECT tags.*
