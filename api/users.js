@@ -1,6 +1,6 @@
 const express = require("express");
 const usersRouter = express.Router();
-const { getAllUsers, getUserByUsername, client } = require("../db")
+const { getAllUsers, getUserByUsername, client, createUser } = require("../db")
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 
@@ -12,6 +12,42 @@ usersRouter.use((req, res, next) => {
 usersRouter.get("/", async (req, res) => {
     const users = await getAllUsers();
     res.send({ users });
+});
+
+usersRouter.post("/register", async (req, res, next) => {
+    const {username, password, name, location} = req.body;
+
+    try {
+        const _user = await getUserByUsername(username);
+
+        if (_user) {
+            next({
+                name: "Username Error",
+                message: "A user by that username already exists"
+            });
+        }
+
+        const user = await createUser({
+            username,
+            password,
+            name,
+            location,
+        });
+
+        const token = jwt.sign({
+            id: user.id,
+            username }, JWT_SECRET, {
+                expiresIn: "1w"
+        });
+
+        res.send({
+            message: "Thank you for signing up!",
+            token: token
+        });
+
+    } catch ({name, message}) {
+        next({name, message})
+    }
 });
 
 usersRouter.post("/login", async(req, res, next) => {
@@ -26,8 +62,11 @@ usersRouter.post("/login", async(req, res, next) => {
 
     try {
         const user = await getUserByUsername(username);
-        const token = jwt.sign({ username, password }, JWT_SECRET);
-        console.log(token);
+        const token = jwt.sign({
+                id: user.id,
+                username }, JWT_SECRET, {
+                    expiresIn: "1w"
+            });
 
         if (user && user.password === password) {
             res.send({
