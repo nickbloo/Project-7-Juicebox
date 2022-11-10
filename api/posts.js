@@ -20,7 +20,7 @@ postsRouter.get("/", async (req, res) => {
     }
 });
 
-// Creating a post does not work and deleting a post doesn't either
+
 postsRouter.post("/", requireUser, async (req, res, next) => {
     const {title, content, tags = ""} = req.body;
     const tagArr = tags.trim().split(/\s+/)
@@ -85,7 +85,7 @@ postsRouter.patch("/:postId", requireUser, async (req, res, next) => {
     }
 });
 
-postsRouter.delete(":/postId", requireUser, async (req, res, next) => {
+postsRouter.delete("/:postId", requireUser, async (req, res, next) => {
     try {
         const post = await getPostById(req.params.postId);
 
