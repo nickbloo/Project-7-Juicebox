@@ -3,6 +3,7 @@ const usersRouter = require("./users");
 const postsRouter = require("./posts");
 const tagsRouter = require("./tags");
 const apiRouter = express.Router();
+const { requireUser } = require("./utils");
 
 const { getUserById } = require("../db");
 const { JWT_SECRET } = process.env;
@@ -42,6 +43,7 @@ apiRouter.use((req, res, next) => {
     }
     next();
 });
+
 
 apiRouter.use("/users", usersRouter);
 apiRouter.use("/posts", postsRouter);
