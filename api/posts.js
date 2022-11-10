@@ -37,7 +37,7 @@ postsRouter.post("/", requireUser, async (req, res, next) => {
     try {
         const post = await createPost(postData);
 
-        res.send({ post });
+        res.send({ post: post });
     } catch ({name, message}) {
         next({name, message});
     }
@@ -71,6 +71,27 @@ postsRouter.patch("/:postId", requireUser, async (req, res, next) => {
                 name: "Unauthorized User Error",
                 message: "You cannot update a post that is not yours"
             })
+        }
+    } catch ({name, message}) {
+        next({name, message});
+    }
+});
+
+postsRouter.delete(":/postId", requireUser, async (req, res, next) => {
+    try {
+        const post = await getPostById(req.params.postId);
+
+        if (post && post.author.id === req.user.id) {
+            const updatedPost = await updatePost(post.id, {active: false});
+            res.send({post: updatedPost});
+        } else {
+            next(post ? {
+                name: "Unathorized User Error",
+                message: "You cannot delete a post that is not yours"
+            } : {
+                name: "Post Not Found Error",
+                message: "That post does not exist"
+            });
         }
     } catch ({name, message}) {
         next({name, message});
