@@ -6,14 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon index.js",
+    "seed": "node ./db/seed.js",
     "seed:dev": "nodemon db/seed.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "webpack": "^5.75.0"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
