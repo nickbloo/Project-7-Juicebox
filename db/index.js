@@ -80,7 +80,10 @@ async function createUser({
       `);
   
       if (!user) {
-        return null
+        throw {
+          name: "User Not Found Error",
+          message: "Could not find a user with that id"
+        }
       }
   
       user.posts = await getPostsByUser(userId);

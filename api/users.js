@@ -1,6 +1,6 @@
 const express = require("express");
 const usersRouter = express.Router();
-const { getAllUsers, getUserByUsername, client, createUser } = require("../db")
+const { getAllUsers, getUserByUsername, client, createUser, getUserById, updateUser } = require("../db")
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const { requireUser } = require("./utils");
@@ -11,8 +11,15 @@ usersRouter.use((req, res, next) => {
 });
 
 usersRouter.get("/", async (req, res) => {
-    const users = await getAllUsers();
-    res.send({ users });
+    try {
+        const allUsers = await getAllUsers();
+        const users = allUsers.filter(user => {
+            return user.active || (req.user && user.id === req.user.id);
+        })
+        res.send({ users });
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
 });
 
 usersRouter.post("/register", async (req, res, next) => {
@@ -83,6 +90,27 @@ usersRouter.post("/login", async(req, res, next) => {
     } catch (error) {
         console.error
         next(error);
+    }
+});
+
+usersRouter.delete("/:userId", requireUser, async (req, res, next) => {
+    try {
+        const user = await getUserById(req.params.userId);
+
+        if (user && user.id === req.user.id) {
+            const deletedUser = await updateUser(user.id, {active: false});
+            res.send({user: deletedUser});
+        } else {
+            next(user ? {
+                name: "Unathorized User Error",
+                message: "You cannot delete a user that is not you"
+            } : {
+                name: "User Not Found Error",
+                message: "That user does not exist"
+            });
+        }
+    } catch ({name, message}) {
+        next({name, message});
     }
 });
 
