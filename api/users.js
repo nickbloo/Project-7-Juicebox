@@ -4,6 +4,7 @@ const { getAllUsers, getUserByUsername, client, createUser, getUserById, updateU
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const { requireUser } = require("./utils");
+require("dotenv").config();
 
 usersRouter.use((req, res, next) => {
     console.log("Request made to /users");

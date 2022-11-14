@@ -8,6 +8,7 @@ const { requireUser } = require("./utils");
 const { getUserById } = require("../db");
 const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 apiRouter.use(async (req, res, next) => {
     const prefix = "Bearer ";
